@@ -11,9 +11,9 @@ import com.example.model.VitalSignsDto;
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface VitalSignsConverter {
 
-	VitalSignsDto convertVitalSignToDto(VitalSigns vitalSign);
+	VitalSignsDto convertVitalSignsToDto(VitalSigns vitalSigns);
 
-	VitalSigns convertDtoToVitalSign(VitalSignsDto dto);
+	VitalSigns convertDtoToVitalSigns(VitalSignsDto dto);
 
 	List<VitalSignsDto> convertVitalSignsToDtos(List<VitalSigns> vitalSigns);
 

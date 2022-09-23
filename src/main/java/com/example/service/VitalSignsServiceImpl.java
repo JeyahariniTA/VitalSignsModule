@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.example.config.LogAuditPayload;
+import com.example.config.LogExecutionTime;
 import com.example.convertor.VitalSignsConverter;
 import com.example.model.VitalSigns;
 import com.example.model.VitalSignsDto;
@@ -18,18 +20,20 @@ public class VitalSignsServiceImpl implements VitalSignsService {
 	@Autowired
 	VitalSignsRepository vitalSignRepository;
 
+	@Autowired
 	VitalSignsConverter vitalSignConverter;
 
 	@Override
-	public List<VitalSignsDto> listVitalSigns() {
-		return vitalSignConverter.convertVitalSignsToDtos(vitalSignRepository.findAll());
+	public List<VitalSigns> listVitalSigns() {
+		return vitalSignRepository.findAll();
 	}
 
 	@Override
+	@LogExecutionTime
 	public VitalSignsDto getVitalSignById(int id) {
 		try {
 			if (vitalSignRepository.existsById(id)) {
-				return vitalSignConverter.convertVitalSignToDto(vitalSignRepository.findById(id).get());
+				return vitalSignConverter.convertVitalSignsToDto(vitalSignRepository.findById(id).get());
 			} else {
 				return new VitalSignsDto();
 			}
@@ -39,11 +43,13 @@ public class VitalSignsServiceImpl implements VitalSignsService {
 	}
 
 	@Override
-	public VitalSignsDto addVitalSign(VitalSigns vitalSign) {
-		return vitalSignConverter.convertVitalSignToDto(vitalSignRepository.save(vitalSign));
+	@LogAuditPayload(action = "add", description = "Adding vital signs")
+	public VitalSigns addVitalSign(VitalSigns vitalSign) {
+		return vitalSignRepository.save(vitalSign);
 	}
 
 	@Override
+	@LogAuditPayload(action = "delete", description = "Deleting vital sing")
 	public String deleteVitalSign(int id) {
 		if (vitalSignRepository.existsById(id)) {
 			vitalSignRepository.deleteById(id);
@@ -54,9 +60,10 @@ public class VitalSignsServiceImpl implements VitalSignsService {
 	}
 
 	@Override
+	@LogAuditPayload(action = "update", description = "Updating vital signs")
 	public VitalSignsDto updateById(VitalSigns vitalSign) {
 		if (vitalSignRepository.existsById(vitalSign.getId())) {
-			return vitalSignConverter.convertVitalSignToDto(vitalSignRepository.save(vitalSign));
+			return vitalSignConverter.convertVitalSignsToDto(vitalSignRepository.save(vitalSign));
 		} else {
 			return new VitalSignsDto();
 		}
@@ -76,7 +83,7 @@ public class VitalSignsServiceImpl implements VitalSignsService {
 		if (vitalSignRepository.existsById(id)) {
 			VitalSigns vitalSign = vitalSignRepository.findById(id).get();
 			vitalSign.setHeight(temperature);
-			vitalSignDto = vitalSignConverter.convertVitalSignToDto(vitalSignRepository.save(vitalSign));
+			vitalSignDto = vitalSignConverter.convertVitalSignsToDto(vitalSignRepository.save(vitalSign));
 		}
 		return vitalSignDto;
 	}

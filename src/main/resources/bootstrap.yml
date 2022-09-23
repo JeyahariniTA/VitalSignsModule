@@ -5,10 +5,13 @@ spring:
     name: vital-sign-module   
   profiles:
     active: development
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/TestDB
   cloud:
     config:
       enabled: true
-      uri: http://localhost:8080  
+      uri: http://localhost:8081  
       fail-fast: true 
     consul:
       host: localhost
@@ -24,7 +27,7 @@ spring:
         enabled: true
     vault:
       port: 8200
-      host: 127.0.0.1
+      host: localhost
       token: 00000000-0000-0000-0000-000000000000
       scheme: http
       kv:
@@ -32,14 +35,19 @@ spring:
         backend: tcds/kv/app-name
         application-name: vital-sign-module
   config:
-    import: vault://secret/vital-sign-module
+    import: vault://secret/vital-sign-module/development
   cache:
     type: redis
     redis:
-      cache-null-values: true       
+      cache-null-values: true    
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer   
 management:
   security:
-    enabled:  false
+    enabled: false
 jwt:
   secret: harini
 springdoc:

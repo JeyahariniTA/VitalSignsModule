@@ -32,6 +32,7 @@ public class VitalSignsController {
 	@Autowired
 	VitalSignsService dao;
 
+	@Autowired
 	VitalSignsConverter vitalSignsConverter;
 
 	@Autowired
@@ -46,7 +47,7 @@ public class VitalSignsController {
 	@GetMapping(path = "/get")
 	@ResponseBody
 	public List<VitalSignsDto> getVitalSigns() {
-		return dao.listVitalSigns();
+		return vitalSignsConverter.convertVitalSignsToDtos(dao.listVitalSigns());
 	}
 
 	@GetMapping(path = "/get/{vitalSignId}")
@@ -70,7 +71,9 @@ public class VitalSignsController {
 			ResponseEntity<String> obj = patientModuleFeign.getPatientByMrn(mrn);
 			String id = obj.getBody();
 			vitalSignsDto.setPatientId(Integer.parseInt(id));
-			vitalSignsDto = dao.addVitalSign(vitalSignsConverter.convertDtoToVitalSign(vitalSignsDto));
+			VitalSigns vitalSigns = vitalSignsConverter.convertDtoToVitalSigns(vitalSignsDto);
+			vitalSigns = dao.addVitalSign(vitalSigns);
+			vitalSignsDto = vitalSignsConverter.convertVitalSignsToDto(vitalSigns);
 
 			if (vitalSignsDto.getId() == 0) {
 				throw new CustomException("Failed to add vital signs", HttpStatus.NOT_FOUND);

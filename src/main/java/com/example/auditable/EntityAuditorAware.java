@@ -9,6 +9,8 @@ public class EntityAuditorAware implements AuditorAware<String> {
 
 	@Override
 	public Optional<String> getCurrentAuditor() {
-		return Optional.of(SecurityContextHolder.getContext().getAuthentication().getName());
+		return Optional.of(SecurityContextHolder.getContext().getAuthentication() != null
+				? SecurityContextHolder.getContext().getAuthentication().getName()
+				: "Harini");
 	}
 }
